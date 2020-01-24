@@ -1,20 +1,18 @@
-import React, { useEffect, useReducer, useState } from 'react'
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native'
+import React, { useState } from 'react'
+import { StyleSheet, View, Button, TextInput } from 'react-native'
 import API, { graphqlOperation } from '@aws-amplify/api'
 import PubSub from '@aws-amplify/pubsub'
 import { createTodo } from './src/graphql/mutations'
 
 import config from './aws-exports'
-API.configure(config) // Configure Amplify
+API.configure(config)
 PubSub.configure(config)
 
 export default function App() {
-  const [toDoItems, setToDoItems] = useState([])
   const [toDoName, setToDoName] = useState('')
   const [toDoDescription, setToDoDescription] = useState('')
 
   const createNewTodo = async () => {
-    console.log(`Adding todo: ${toDoName}`)
     const todo = { name: toDoName, description: toDoDescription }
     await API.graphql(graphqlOperation(createTodo, { input: todo }))
     clearState()
@@ -28,13 +26,13 @@ export default function App() {
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.toDoNameTextInput}
+        style={styles.toDoNameInput}
         placeholder='To do name'
         value={toDoName}
         onChangeText={text => setToDoName(text)}
       />
       <TextInput
-        style={styles.toDoDescriptionTextInput}
+        style={styles.toDoDescriptionInput}
         placeholder='To do description'
         value={toDoDescription}
         onChangeText={text => setToDoDescription(text)}
@@ -57,22 +55,23 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#ddeeff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
     flex: 1,
   },
-  toDoNameTextInput: {
+  toDoNameInput: {
     marginTop: 40,
     marginLeft: 20,
-    height: 40,
+    height: 30,
   },
-  toDoDescriptionTextInput: {
-    margin: 20,
-    height: 40,
-    width: 200,
+  toDoDescriptionInput: {
+    marginTop: 40,
+    marginLeft: 20,
+    marginBottom: 20,
+    height: 30,
   },
   button: {
     margin: 10,
     padding: 10,
+    backgroundColor: 'red',
+    color: 'red',
   },
 })
