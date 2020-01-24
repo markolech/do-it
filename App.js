@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { StyleSheet, View, Button, TextInput } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, View, Button, TextInput, Text } from 'react-native'
 import API, { graphqlOperation } from '@aws-amplify/api'
 import { createTodo } from './src/graphql/mutations'
+import { listTodos } from './src/graphql/queries'
 
 import config from './aws-exports'
 API.configure(config)
@@ -9,17 +10,30 @@ API.configure(config)
 export default function App() {
   const [toDoName, setToDoName] = useState('')
   const [toDoDescription, setToDoDescription] = useState('')
+  const [toDoList, setToDoList] = useState({})
+  const [showToDos, setShowToDos] = useState(false)
 
   const createNewTodo = async () => {
     const todo = { name: toDoName, description: toDoDescription }
     await API.graphql(graphqlOperation(createTodo, { input: todo }))
-    clearState()
+    clearInputs()
+    getToDoData()
   }
 
-  const clearState = () => {
+  const getToDoData = async () => {
+    const toDoData = await API.graphql(graphqlOperation(listTodos))
+    setToDoList(toDoData)
+    setShowToDos(true)
+  }
+
+  const clearInputs = () => {
     setToDoName('')
     setToDoDescription('')
   }
+
+  useEffect(() => {
+    getToDoData()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -35,17 +49,36 @@ export default function App() {
         value={toDoDescription}
         onChangeText={text => setToDoDescription(text)}
       />
-      <Button
-        style={styles.button}
-        onPress={createNewTodo}
-        title='Create Todo'
-      />
-
-      <Button
-        style={styles.button}
-        onPress={() => clearState()}
-        title='Reset'
-      />
+      <View style={styles.buttonContainer}>
+        <Button
+          style={styles.button}
+          onPress={createNewTodo}
+          title='Create Todo'
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          style={styles.button}
+          onPress={() => clearInputs()}
+          title='Reset'
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          style={styles.button}
+          onPress={() => getToDoData()}
+          title='Show ToDos'
+        />
+      </View>
+      {showToDos ? (
+        <View>
+          {toDoList.data.listTodos.items.map((todo, i) => (
+            <Text key={todo.id}>
+              {todo.name} : {todo.description}
+            </Text>
+          ))}
+        </View>
+      ) : null}
     </View>
   )
 }
@@ -71,5 +104,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'red',
     color: 'red',
+  },
+  buttonContainer: {
+    marginLeft: 80,
+    marginRight: 80,
+    marginTop: 10,
+    marginBottom: 10,
   },
 })
