@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import { StyleSheet, View, Button, TextInput } from 'react-native'
 import API, { graphqlOperation } from '@aws-amplify/api'
-import PubSub from '@aws-amplify/pubsub'
 import { createTodo } from './src/graphql/mutations'
 
 import config from './aws-exports'
 API.configure(config)
-PubSub.configure(config)
 
 export default function App() {
   const [toDoName, setToDoName] = useState('')
