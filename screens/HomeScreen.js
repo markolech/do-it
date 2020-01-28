@@ -1,5 +1,5 @@
 import * as WebBrowser from 'expo-web-browser'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Image,
   Platform,
@@ -9,66 +9,96 @@ import {
   TouchableOpacity,
   View,
   TextInput,
+  Button,
 } from 'react-native'
+
+import { createTodo } from '../src/graphql/mutations'
+import { listTodos } from '../src/graphql/queries'
+
+import API, { graphqlOperation } from '@aws-amplify/api'
+
+import config from '../aws-exports'
+API.configure(config)
 
 import { MonoText } from '../components/StyledText'
 
 export default function HomeScreen() {
+  const [toDoName, setToDoName] = useState('')
+  const [toDoDescription, setToDoDescription] = useState('')
+  const [toDoList, setToDoList] = useState({})
+  const [showToDos, setShowToDos] = useState(false)
+
+  const createNewTodo = async () => {
+    const todo = { name: toDoName, description: toDoDescription }
+    await API.graphql(graphqlOperation(createTodo, { input: todo }))
+    clearInputs()
+    getToDoData()
+  }
+
+  const getToDoData = async () => {
+    const toDoData = await API.graphql(graphqlOperation(listTodos))
+    setToDoList(toDoData)
+    setShowToDos(true)
+  }
+
+  const clearInputs = () => {
+    setToDoName('')
+    setToDoDescription('')
+  }
+
+  useEffect(() => {
+    getToDoData()
+  }, [])
+
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
       >
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
+        <TextInput
+          style={styles.toDoNameInput}
+          placeholder='To do name'
+          value={toDoName}
+          onChangeText={text => setToDoName(text)}
+        />
+        <TextInput
+          style={styles.toDoDescriptionInput}
+          placeholder='To do description'
+          value={toDoDescription}
+          onChangeText={text => setToDoDescription(text)}
+        />
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.button}
+            onPress={createNewTodo}
+            title='Create Todo'
           />
         </View>
-
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
-
-          <Text style={styles.getStartedText}>Get started by opening</Text>
-
-          <View
-            style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
-          >
-            <MonoText>screens/HomeScreen.js</MonoText>
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.button}
+            onPress={() => clearInputs()}
+            title='Reset'
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.button}
+            onPress={() => getToDoData()}
+            title='Show ToDos'
+          />
+        </View>
+        {showToDos ? (
+          <View>
+            {toDoList.data.listTodos.items.map((todo, i) => (
+              <Text key={todo.id}>
+                {todo.name} : {todo.description}
+              </Text>
+            ))}
           </View>
-
-          <Text style={styles.getStartedText}>
-            Change this text and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>
-              Help, it didn’t automatically reload!
-            </Text>
-          </TouchableOpacity>
-        </View>
+        ) : null}
       </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
-        </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}
-        >
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
-        </View>
-      </View>
     </View>
   )
 }
@@ -116,6 +146,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  toDoNameInput: {
+    marginTop: 40,
+    marginLeft: 20,
+    height: 30,
+  },
+  toDoDescriptionInput: {
+    marginTop: 40,
+    marginLeft: 20,
+    marginBottom: 20,
+    height: 30,
+  },
+  button: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: 'red',
+    color: 'red',
+  },
+  buttonContainer: {
+    marginLeft: 80,
+    marginRight: 80,
+    marginTop: 10,
+    marginBottom: 10,
   },
   developmentModeText: {
     marginBottom: 20,
