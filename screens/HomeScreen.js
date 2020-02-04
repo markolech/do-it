@@ -5,12 +5,12 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   TextInput,
-  Button,
 } from 'react-native'
+
+import { Button, Text, Container, Header, Content } from 'native-base'
 
 import { createTodo } from '../src/graphql/mutations'
 import { listTodos } from '../src/graphql/queries'
@@ -21,6 +21,8 @@ import config from '../aws-exports'
 API.configure(config)
 
 import { MonoText } from '../components/StyledText'
+
+import * as Font from 'expo-font'
 
 export default function HomeScreen() {
   const [toDoName, setToDoName] = useState('')
@@ -51,11 +53,14 @@ export default function HomeScreen() {
   }, [])
 
   return (
-    <View style={styles.container}>
-      <ScrollView
+    <Container>
+      {/* <Header /> */}
+      <Content>
+        {/* <View style={styles.container}> */}
+        {/* <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-      >
+      > */}
         <TextInput
           style={styles.toDoNameInput}
           placeholder='To do name'
@@ -68,44 +73,39 @@ export default function HomeScreen() {
           value={toDoDescription}
           onChangeText={text => setToDoDescription(text)}
         />
-        <View style={styles.buttonContainer}>
-          <Button
-            style={styles.button}
-            onPress={createNewTodo}
-            title='Create Todo'
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            style={styles.button}
-            onPress={() => clearInputs()}
-            title='Reset'
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            style={styles.button}
-            onPress={() => getToDoData()}
-            title='Show ToDos'
-          />
-        </View>
-        {showToDos ? (
-          <View>
-            {toDoList.data.listTodos.items.map((todo, i) => (
-              <Text key={todo.id}>
-                {todo.name} : {todo.description}
-              </Text>
-            ))}
-          </View>
-        ) : null}
-      </ScrollView>
-    </View>
+
+        <Button bordered onPress={createNewTodo}>
+          <Text>Create Todo</Text>
+        </Button>
+
+        <Button onPress={() => getToDoData()}>
+          <Text>Show ToDos</Text>
+        </Button>
+
+        <Button hasText onPress={() => clearInputs()}>
+          <Text>Clear</Text>
+        </Button>
+
+        {showToDos
+          ? // <View>
+            //   {toDoList.data.listTodos.items.map((todo, i) => (
+            //     <Text key={todo.id}>
+            //       {todo.name} : {todo.description}
+            //     </Text>
+            //   ))}
+            // </View>
+            null
+          : null}
+        {/* </ScrollView> */}
+        {/* </View> */}
+      </Content>
+    </Container>
   )
 }
 
-HomeScreen.navigationOptions = {
-  header: null,
-}
+// HomeScreen.navigationOptions = {
+//   header: null,
+// }
 
 function DevelopmentModeNotice() {
   if (__DEV__) {
@@ -130,6 +130,10 @@ function DevelopmentModeNotice() {
   }
 }
 
+HomeScreen.navigationOptions = {
+  title: 'Home',
+}
+
 function handleLearnMorePress() {
   WebBrowser.openBrowserAsync(
     'https://docs.expo.io/versions/latest/workflow/development-mode/'
@@ -143,32 +147,32 @@ function handleHelpPress() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: '#fff',
+  // },
   toDoNameInput: {
-    marginTop: 40,
-    marginLeft: 20,
-    height: 30,
+    // marginTop: 40,
+    // marginLeft: 20,
+    // height: 30,
   },
   toDoDescriptionInput: {
-    marginTop: 40,
-    marginLeft: 20,
-    marginBottom: 20,
-    height: 30,
+    // marginTop: 40,
+    // marginLeft: 20,
+    // marginBottom: 20,
+    // height: 30,
   },
   button: {
-    margin: 10,
-    padding: 10,
-    backgroundColor: 'red',
-    color: 'red',
+    // margin: 10,
+    // padding: 10,
+    // backgroundColor: 'red',
+    // color: 'red',
   },
   buttonContainer: {
-    marginLeft: 80,
-    marginRight: 80,
-    marginTop: 10,
-    marginBottom: 10,
+    // marginLeft: 80,
+    // marginRight: 80,
+    // marginTop: 10,
+    // marginBottom: 10,
   },
   developmentModeText: {
     marginBottom: 20,
@@ -178,7 +182,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 30,
+    // paddingTop: 30,
   },
   welcomeContainer: {
     alignItems: 'center',
