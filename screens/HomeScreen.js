@@ -10,7 +10,7 @@ import {
   TextInput,
 } from 'react-native'
 
-import { Button, Text, Container, Header, Content } from 'native-base'
+import { Button, Text, Container, Header, Content, Input } from 'native-base'
 
 import { createTodo } from '../src/graphql/mutations'
 import { listTodos } from '../src/graphql/queries'
@@ -61,13 +61,13 @@ export default function HomeScreen() {
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
       > */}
-        <TextInput
-          style={styles.toDoNameInput}
+        <Input
+          // style={styles.toDoNameInput}
           placeholder='To do name'
           value={toDoName}
           onChangeText={text => setToDoName(text)}
         />
-        <TextInput
+        <Input
           style={styles.toDoDescriptionInput}
           placeholder='To do description'
           value={toDoDescription}
@@ -78,11 +78,11 @@ export default function HomeScreen() {
           <Text>Create Todo</Text>
         </Button>
 
-        <Button onPress={() => getToDoData()}>
+        <Button rounded onPress={() => getToDoData()}>
           <Text>Show ToDos</Text>
         </Button>
 
-        <Button hasText onPress={() => clearInputs()}>
+        <Button full onPress={() => clearInputs()}>
           <Text>Clear</Text>
         </Button>
 
