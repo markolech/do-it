@@ -56,13 +56,7 @@ export default function HomeScreen() {
     <Container>
       {/* <Header /> */}
       <Content>
-        {/* <View style={styles.container}> */}
-        {/* <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      > */}
         <Input
-          // style={styles.toDoNameInput}
           placeholder='To do name'
           value={toDoName}
           onChangeText={text => setToDoName(text)}
@@ -86,18 +80,15 @@ export default function HomeScreen() {
           <Text>Clear</Text>
         </Button>
 
-        {showToDos
-          ? // <View>
-            //   {toDoList.data.listTodos.items.map((todo, i) => (
-            //     <Text key={todo.id}>
-            //       {todo.name} : {todo.description}
-            //     </Text>
-            //   ))}
-            // </View>
-            null
-          : null}
-        {/* </ScrollView> */}
-        {/* </View> */}
+        {showToDos ? (
+          <View>
+            {toDoList.data.listTodos.items.map((todo, i) => (
+              <Text key={todo.id}>
+                {todo.name} : {todo.description}
+              </Text>
+            ))}
+          </View>
+        ) : null}
       </Content>
     </Container>
   )
